@@ -13,7 +13,7 @@
  * for both artaxd and artax-qt, to make it harder for attackers to
  * target servers or GUI users specifically.
  */
-const std::string CLIENT_NAME("Artax Core");
+const std::string CLIENT_NAME("Artax Core 2.0.0.3");
 
 /**
  * Client version number
