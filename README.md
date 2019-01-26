@@ -5,7 +5,7 @@
             \____|____/____|___/ |____|\____|____/___/\__\
 
 
-V2.0.0.2 - Artax PoS Masternode Chain [NO ICO]
+V2.0.0.3 - Artax PoS Masternode Chain [NO ICO]
 
 Artax is a Powerful Node-Based Pure PoS-based cryptocurrency. A community coin by the community, for the community.
 
