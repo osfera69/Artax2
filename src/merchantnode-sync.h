@@ -3,23 +3,23 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef MASTERNODE_SYNC_H
-#define MASTERNODE_SYNC_H
+#ifndef MERCHANTNODE_SYNC_H
+#define MERCHANTNODE_SYNC_H
 
-#define MASTERNODE_SYNC_INITIAL 0
-#define MASTERNODE_SYNC_SPORKS 1
-#define MASTERNODE_SYNC_LIST 2
-#define MASTERNODE_SYNC_MNW 3
-#define MASTERNODE_SYNC_BUDGET 4
-#define MASTERNODE_SYNC_BUDGET_PROP 10
-#define MASTERNODE_SYNC_BUDGET_FIN 11
-#define MASTERNODE_SYNC_COMMUNITYVOTE 5
-#define MASTERNODE_SYNC_COMMUNITYVOTE_PROP 20
-#define MASTERNODE_SYNC_FAILED 998
-#define MASTERNODE_SYNC_FINISHED 999
+#define MERCHANTNODE_SYNC_INITIAL 0
+#define MERCHANTNODE_SYNC_SPORKS 1
+#define MERCHANTNODE_SYNC_LIST 2
+#define MERCHANTNODE_SYNC_MNW 3
+#define MERCHANTNODE_SYNC_BUDGET 4
+#define MERCHANTNODE_SYNC_BUDGET_PROP 10
+#define MERCHANTNODE_SYNC_BUDGET_FIN 11
+#define MERCHANTNODE_SYNC_COMMUNITYVOTE 5
+#define MERCHANTNODE_SYNC_COMMUNITYVOTE_PROP 20
+#define MERCHANTNODE_SYNC_FAILED 998
+#define MERCHANTNODE_SYNC_FINISHED 999
 
-#define MASTERNODE_SYNC_TIMEOUT 5
-#define MASTERNODE_SYNC_THRESHOLD 2
+#define MERCHANTNODE_SYNC_TIMEOUT 5
+#define MERCHANTNODE_SYNC_THRESHOLD 2
 
 class CMerchantnodeSync;
 extern CMerchantnodeSync merchantnodeSync;
@@ -80,7 +80,7 @@ public:
     void Process();
     bool IsSynced();
     bool IsBlockchainSynced();
-    bool IsMerchantnodeListSynced() { return RequestedMerchantnodeAssets > MASTERNODE_SYNC_LIST; }
+    bool IsMerchantnodeListSynced() { return RequestedMerchantnodeAssets > MERCHANTNODE_SYNC_LIST; }
     void ClearFulfilledRequest();
 };
 

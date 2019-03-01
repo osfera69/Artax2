@@ -3,8 +3,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef MASTERNODEMAN_H
-#define MASTERNODEMAN_H
+#ifndef MERCHANTNODEMAN_H
+#define MERCHANTNODEMAN_H
 
 #include "base58.h"
 #include "key.h"
@@ -14,8 +14,8 @@
 #include "sync.h"
 #include "util.h"
 
-#define MASTERNODES_DUMP_SECONDS (15 * 60)
-#define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
+#define MERCHANTNODES_DUMP_SECONDS (15 * 60)
+#define MERCHANTNODES_DSEG_SECONDS (3 * 60 * 60)
 
 using namespace std;
 

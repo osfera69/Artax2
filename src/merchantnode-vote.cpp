@@ -368,7 +368,7 @@ void CCommunityVoteManager::NewBlock()
     TRY_LOCK(cs, fVoteNewBlock);
     if (!fVoteNewBlock) return;
 
-    if (merchantnodeSync.RequestedMerchantnodeAssets <= MASTERNODE_SYNC_COMMUNITYVOTE) return;
+    if (merchantnodeSync.RequestedMerchantnodeAssets <= MERCHANTNODE_SYNC_COMMUNITYVOTE) return;
 
     // incremental sync with our peers
     if (merchantnodeSync.IsSynced()) {
@@ -623,7 +623,7 @@ void CCommunityVoteManager::Sync(CNode* pfrom, uint256 nProp, bool fPartial)
         ++it1;
     }
 
-    pfrom->PushMessage("ssc", MASTERNODE_SYNC_COMMUNITYVOTE_PROP, nInvCount);
+    pfrom->PushMessage("ssc", MERCHANTNODE_SYNC_COMMUNITYVOTE_PROP, nInvCount);
     LogPrint("mncommunityvote", "CCommunityVoteManager::Sync - sent %d items\n", nInvCount);
 }
 

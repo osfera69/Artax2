@@ -29,14 +29,14 @@ void CActiveMerchantnode::ManageStatus()
 
     //need correct blocks to send ping
     if (Params().NetworkID() != CBaseChainParams::REGTEST && !merchantnodeSync.IsBlockchainSynced()) {
-        status = ACTIVE_MASTERNODE_SYNC_IN_PROCESS;
+        status = ACTIVE_MERCHANTNODE_SYNC_IN_PROCESS;
         LogPrintf("CActiveMerchantnode::ManageStatus() - %s\n", GetStatus());
         return;
     }
 
-    if (status == ACTIVE_MASTERNODE_SYNC_IN_PROCESS) status = ACTIVE_MASTERNODE_INITIAL;
+    if (status == ACTIVE_MERCHANTNODE_SYNC_IN_PROCESS) status = ACTIVE_MERCHANTNODE_INITIAL;
 
-    if (status == ACTIVE_MASTERNODE_INITIAL) {
+    if (status == ACTIVE_MERCHANTNODE_INITIAL) {
         CMerchantnode* pmn;
         pmn = mnodeman.Find(pubKeyMerchantnode);
         if (pmn != NULL) {
@@ -45,9 +45,9 @@ void CActiveMerchantnode::ManageStatus()
         }
     }
 
-    if (status != ACTIVE_MASTERNODE_STARTED) {
+    if (status != ACTIVE_MERCHANTNODE_STARTED) {
         // Set defaults
-        status = ACTIVE_MASTERNODE_NOT_CAPABLE;
+        status = ACTIVE_MERCHANTNODE_NOT_CAPABLE;
         notCapableReason = "";
 
         if (pwalletMain->IsLocked()) {
@@ -91,8 +91,8 @@ void CActiveMerchantnode::ManageStatus()
         CKey keyCollateralAddress;
 
         if (GetMasterNodeVin(vin, pubKeyCollateralAddress, keyCollateralAddress)) {
-            if (GetInputAge(vin) < MASTERNODE_MIN_CONFIRMATIONS) {
-                status = ACTIVE_MASTERNODE_INPUT_TOO_NEW;
+            if (GetInputAge(vin) < MERCHANTNODE_MIN_CONFIRMATIONS) {
+                status = ACTIVE_MERCHANTNODE_INPUT_TOO_NEW;
                 notCapableReason = strprintf("%s - %d confirmations", GetStatus(), GetInputAge(vin));
                 LogPrintf("CActiveMerchantnode::ManageStatus() - %s\n", notCapableReason);
                 return;
@@ -123,7 +123,7 @@ void CActiveMerchantnode::ManageStatus()
             mnb.Relay();
 
             LogPrintf("CActiveMerchantnode::ManageStatus() - Is capable master node!\n");
-            status = ACTIVE_MASTERNODE_STARTED;
+            status = ACTIVE_MERCHANTNODE_STARTED;
 
             return;
         } else {
@@ -142,15 +142,15 @@ void CActiveMerchantnode::ManageStatus()
 std::string CActiveMerchantnode::GetStatus()
 {
     switch (status) {
-    case ACTIVE_MASTERNODE_INITIAL:
+    case ACTIVE_MERCHANTNODE_INITIAL:
         return "Node just started, not yet activated";
-    case ACTIVE_MASTERNODE_SYNC_IN_PROCESS:
+    case ACTIVE_MERCHANTNODE_SYNC_IN_PROCESS:
         return "Sync in progress. Must wait until sync is complete to start Merchantnode";
-    case ACTIVE_MASTERNODE_INPUT_TOO_NEW:
-        return strprintf("Merchantnode input must have at least %d confirmations", MASTERNODE_MIN_CONFIRMATIONS);
-    case ACTIVE_MASTERNODE_NOT_CAPABLE:
+    case ACTIVE_MERCHANTNODE_INPUT_TOO_NEW:
+        return strprintf("Merchantnode input must have at least %d confirmations", MERCHANTNODE_MIN_CONFIRMATIONS);
+    case ACTIVE_MERCHANTNODE_NOT_CAPABLE:
         return "Not capable merchantnode: " + notCapableReason;
-    case ACTIVE_MASTERNODE_STARTED:
+    case ACTIVE_MERCHANTNODE_STARTED:
         return "Merchantnode successfully started";
     default:
         return "unknown";
@@ -159,7 +159,7 @@ std::string CActiveMerchantnode::GetStatus()
 
 bool CActiveMerchantnode::SendMerchantnodePing(std::string& errorMessage)
 {
-    if (status != ACTIVE_MASTERNODE_STARTED) {
+    if (status != ACTIVE_MERCHANTNODE_STARTED) {
         errorMessage = "Merchantnode is not in a running status";
         return false;
     }
@@ -183,7 +183,7 @@ bool CActiveMerchantnode::SendMerchantnodePing(std::string& errorMessage)
     // Update lastPing for our merchantnode in Merchantnode list
     CMerchantnode* pmn = mnodeman.Find(vin);
     if (pmn != NULL) {
-        if (pmn->IsPingedWithin(MASTERNODE_PING_SECONDS, mnp.sigTime)) {
+        if (pmn->IsPingedWithin(MERCHANTNODE_PING_SECONDS, mnp.sigTime)) {
             errorMessage = "Too early to send Merchantnode Ping";
             return false;
         }
@@ -202,7 +202,7 @@ bool CActiveMerchantnode::SendMerchantnodePing(std::string& errorMessage)
     } else {
         // Seems like we are trying to send a ping while the Merchantnode is not registered in the network
         errorMessage = "Merchantnode List doesn't include our Merchantnode, shutting down Merchantnode pinging service! " + vin.ToString();
-        status = ACTIVE_MASTERNODE_NOT_CAPABLE;
+        status = ACTIVE_MERCHANTNODE_NOT_CAPABLE;
         notCapableReason = errorMessage;
         return false;
     }
@@ -390,7 +390,7 @@ vector<COutput> CActiveMerchantnode::SelectCoinsMerchantnode()
 
     // Filter
     for (const COutput& out : vCoins) {
-        if (out.tx->vout[out.i].nValue == MASTERNODE_COLLATERAL * COIN)
+        if (out.tx->vout[out.i].nValue == MERCHANTNODE_COLLATERAL * COIN)
             filteredCoins.push_back(out);
     }
     return filteredCoins;
@@ -401,7 +401,7 @@ bool CActiveMerchantnode::EnableHotColdMasterNode(CTxIn& newVin, CService& newSe
 {
     if (!fMasterNode) return false;
 
-    status = ACTIVE_MASTERNODE_STARTED;
+    status = ACTIVE_MERCHANTNODE_STARTED;
 
     //The values below are needed for signing mnping messages going forward
     vin = newVin;

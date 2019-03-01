@@ -4,8 +4,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef MASTERNODEHELPERS_H
-#define MASTERNODEHELPERS_H
+#ifndef MERCHANTNODEHELPERS_H
+#define MERCHANTNODEHELPERS_H
 
 #include "main.h"
 #include "sync.h"

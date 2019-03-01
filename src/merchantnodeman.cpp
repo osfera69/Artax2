@@ -15,7 +15,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 
-#define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
+#define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MERCHANTNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 
 /** Merchantnode manager */
 CMerchantnodeMan mnodeman;
@@ -228,7 +228,7 @@ void CMerchantnodeMan::AskForMN(CNode* pnode, CTxIn& vin)
 
     LogPrint("merchantnode", "CMerchantnodeMan::AskForMN - Asking node for missing entry, vin: %s\n", vin.prevout.hash.ToString());
     pnode->PushMessage("dseg", vin);
-    int64_t askAgain = GetTime() + MASTERNODE_MIN_MNP_SECONDS;
+    int64_t askAgain = GetTime() + MERCHANTNODE_MIN_MNP_SECONDS;
     mWeAskedForMerchantnodeListEntry[vin.prevout] = askAgain;
 }
 
@@ -250,9 +250,9 @@ void CMerchantnodeMan::CheckAndRemove(bool forceExpiredRemoval)
     //remove inactive and outdated
     vector<CMerchantnode>::iterator it = vMerchantnodes.begin();
     while (it != vMerchantnodes.end()) {
-        if ((*it).activeState == CMerchantnode::MASTERNODE_REMOVE ||
-            (*it).activeState == CMerchantnode::MASTERNODE_VIN_SPENT ||
-            (forceExpiredRemoval && (*it).activeState == CMerchantnode::MASTERNODE_EXPIRED) ||
+        if ((*it).activeState == CMerchantnode::MERCHANTNODE_REMOVE ||
+            (*it).activeState == CMerchantnode::MERCHANTNODE_VIN_SPENT ||
+            (forceExpiredRemoval && (*it).activeState == CMerchantnode::MERCHANTNODE_EXPIRED) ||
             (*it).protocolVersion < merchantnodePayments.GetMinMerchantnodePaymentsProto()) {
             LogPrint("merchantnode", "CMerchantnodeMan: Removing inactive Merchantnode %s - %i now\n", (*it).vin.prevout.hash.ToString(), size() - 1);
 
@@ -318,7 +318,7 @@ void CMerchantnodeMan::CheckAndRemove(bool forceExpiredRemoval)
     // remove expired mapSeenMerchantnodeBroadcast
     map<uint256, CMerchantnodeBroadcast>::iterator it3 = mapSeenMerchantnodeBroadcast.begin();
     while (it3 != mapSeenMerchantnodeBroadcast.end()) {
-        if ((*it3).second.lastPing.sigTime < GetTime() - (MASTERNODE_REMOVAL_SECONDS * 2)) {
+        if ((*it3).second.lastPing.sigTime < GetTime() - (MERCHANTNODE_REMOVAL_SECONDS * 2)) {
             mapSeenMerchantnodeBroadcast.erase(it3++);
             merchantnodeSync.mapSeenSyncMNB.erase((*it3).second.GetHash());
         } else {
@@ -329,7 +329,7 @@ void CMerchantnodeMan::CheckAndRemove(bool forceExpiredRemoval)
     // remove expired mapSeenMerchantnodePing
     map<uint256, CMerchantnodePing>::iterator it4 = mapSeenMerchantnodePing.begin();
     while (it4 != mapSeenMerchantnodePing.end()) {
-        if ((*it4).second.sigTime < GetTime() - (MASTERNODE_REMOVAL_SECONDS * 2)) {
+        if ((*it4).second.sigTime < GetTime() - (MERCHANTNODE_REMOVAL_SECONDS * 2)) {
             mapSeenMerchantnodePing.erase(it4++);
         } else {
             ++it4;
@@ -359,10 +359,10 @@ int CMerchantnodeMan::stable_size ()
         if (mn.protocolVersion < nMinProtocol)
             continue; // Skip obsolete versions
 
-        if (IsSporkActive (SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
+        if (IsSporkActive (SPORK_8_MERCHANTNODE_PAYMENT_ENFORCEMENT)) {
             nMerchantnode_Age = GetAdjustedTime() - mn.sigTime;
             if (nMerchantnode_Age < nMerchantnode_Min_Age)
-                continue; // Skip merchantnodes younger than (default) 8000 sec (MUST be > MASTERNODE_REMOVAL_SECONDS)
+                continue; // Skip merchantnodes younger than (default) 8000 sec (MUST be > MERCHANTNODE_REMOVAL_SECONDS)
         }
         mn.Check ();
         if (!mn.IsEnabled ())
@@ -430,7 +430,7 @@ void CMerchantnodeMan::DsegUpdate(CNode* pnode)
     }
 
     pnode->PushMessage("dseg", CTxIn());
-    int64_t askAgain = GetTime() + MASTERNODES_DSEG_SECONDS;
+    int64_t askAgain = GetTime() + MERCHANTNODES_DSEG_SECONDS;
     mWeAskedForMerchantnodeList[pnode->addr] = askAgain;
 }
 
@@ -607,7 +607,7 @@ int CMerchantnodeMan::GetMerchantnodeRank(const CTxIn& vin, int64_t nBlockHeight
             continue;                                                       // Skip obsolete versions
         }
 
-        if (IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
+        if (IsSporkActive(SPORK_8_MERCHANTNODE_PAYMENT_ENFORCEMENT)) {
             nMerchantnode_Age = GetAdjustedTime() - mn.sigTime;
             if ((nMerchantnode_Age) < nMerchantnode_Min_Age) {
                 if (fDebug) LogPrint("merchantnode","Skipping just activated Merchantnode. Age: %ld\n", nMerchantnode_Age);
@@ -796,7 +796,7 @@ void CMerchantnodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CDa
                         return;
                     }
                 }
-                int64_t askAgain = GetTime() + MASTERNODES_DSEG_SECONDS;
+                int64_t askAgain = GetTime() + MERCHANTNODES_DSEG_SECONDS;
                 mAskedUsForMerchantnodeList[pfrom->addr] = askAgain;
             }
         } //else, asking for a specific node which is ok
@@ -812,7 +812,7 @@ void CMerchantnodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CDa
                 if (vin == CTxIn() || vin == mn.vin) {
                     CMerchantnodeBroadcast mnb = CMerchantnodeBroadcast(mn);
                     uint256 hash = mnb.GetHash();
-                    pfrom->PushInventory(CInv(MSG_MASTERNODE_ANNOUNCE, hash));
+                    pfrom->PushInventory(CInv(MSG_MERCHANTNODE_ANNOUNCE, hash));
                     nInvCount++;
 
                     if (!mapSeenMerchantnodeBroadcast.count(hash)) mapSeenMerchantnodeBroadcast.insert(make_pair(hash, mnb));
@@ -826,7 +826,7 @@ void CMerchantnodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CDa
         }
 
         if (vin == CTxIn()) {
-            pfrom->PushMessage("ssc", MASTERNODE_SYNC_LIST, nInvCount);
+            pfrom->PushMessage("ssc", MERCHANTNODE_SYNC_LIST, nInvCount);
             LogPrint("merchantnode", "dseg - Sent %d Merchantnode entries to peer %i\n", nInvCount, pfrom->GetId());
         }
     }

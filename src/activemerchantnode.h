@@ -3,8 +3,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef ACTIVEMASTERNODE_H
-#define ACTIVEMASTERNODE_H
+#ifndef ACTIVEMERCHANTNODE_H
+#define ACTIVEMERCHANTNODE_H
 
 #include "init.h"
 #include "key.h"
@@ -13,11 +13,11 @@
 #include "sync.h"
 #include "wallet.h"
 
-#define ACTIVE_MASTERNODE_INITIAL 0 // initial state
-#define ACTIVE_MASTERNODE_SYNC_IN_PROCESS 1
-#define ACTIVE_MASTERNODE_INPUT_TOO_NEW 2
-#define ACTIVE_MASTERNODE_NOT_CAPABLE 3
-#define ACTIVE_MASTERNODE_STARTED 4
+#define ACTIVE_MERCHANTNODE_INITIAL 0 // initial state
+#define ACTIVE_MERCHANTNODE_SYNC_IN_PROCESS 1
+#define ACTIVE_MERCHANTNODE_INPUT_TOO_NEW 2
+#define ACTIVE_MERCHANTNODE_NOT_CAPABLE 3
+#define ACTIVE_MERCHANTNODE_STARTED 4
 
 // Responsible for activating the Merchantnode and pinging the network
 class CActiveMerchantnode
@@ -50,7 +50,7 @@ public:
 
     CActiveMerchantnode()
     {
-        status = ACTIVE_MASTERNODE_INITIAL;
+        status = ACTIVE_MERCHANTNODE_INITIAL;
     }
 
     /// Manage status of main Merchantnode

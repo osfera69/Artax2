@@ -71,14 +71,14 @@ CMerchantnode::CMerchantnode()
     pubKeyCollateralAddress = CPubKey();
     pubKeyMerchantnode = CPubKey();
     sig = std::vector<unsigned char>();
-    activeState = MASTERNODE_ENABLED;
+    activeState = MERCHANTNODE_ENABLED;
     sigTime = GetAdjustedTime();
     lastPing = CMerchantnodePing();
     cacheInputAge = 0;
     cacheInputAgeBlock = 0;
     unitTest = false;
     allowFreeTx = true;
-    nActiveState = MASTERNODE_ENABLED,
+    nActiveState = MERCHANTNODE_ENABLED,
     protocolVersion = PROTOCOL_VERSION;
     nLastDsq = 0;
     nScanningErrorCount = 0;
@@ -103,7 +103,7 @@ CMerchantnode::CMerchantnode(const CMerchantnode& other)
     cacheInputAgeBlock = other.cacheInputAgeBlock;
     unitTest = other.unitTest;
     allowFreeTx = other.allowFreeTx;
-    nActiveState = MASTERNODE_ENABLED,
+    nActiveState = MERCHANTNODE_ENABLED,
     protocolVersion = other.protocolVersion;
     nLastDsq = other.nLastDsq;
     nScanningErrorCount = other.nScanningErrorCount;
@@ -121,14 +121,14 @@ CMerchantnode::CMerchantnode(const CMerchantnodeBroadcast& mnb)
     pubKeyCollateralAddress = mnb.pubKeyCollateralAddress;
     pubKeyMerchantnode = mnb.pubKeyMerchantnode;
     sig = mnb.sig;
-    activeState = MASTERNODE_ENABLED;
+    activeState = MERCHANTNODE_ENABLED;
     sigTime = mnb.sigTime;
     lastPing = mnb.lastPing;
     cacheInputAge = 0;
     cacheInputAgeBlock = 0;
     unitTest = false;
     allowFreeTx = true;
-    nActiveState = MASTERNODE_ENABLED,
+    nActiveState = MERCHANTNODE_ENABLED,
     protocolVersion = mnb.protocolVersion;
     nLastDsq = mnb.nLastDsq;
     nScanningErrorCount = 0;
@@ -196,33 +196,33 @@ void CMerchantnode::Check(bool forceCheck)
 {
     if (ShutdownRequested()) return;
 
-    if (!forceCheck && (GetTime() - lastTimeChecked < MASTERNODE_CHECK_SECONDS)) return;
+    if (!forceCheck && (GetTime() - lastTimeChecked < MERCHANTNODE_CHECK_SECONDS)) return;
     lastTimeChecked = GetTime();
 
 
     //once spent, stop doing the checks
-    if (activeState == MASTERNODE_VIN_SPENT) return;
+    if (activeState == MERCHANTNODE_VIN_SPENT) return;
 
 
-    if (!IsPingedWithin(MASTERNODE_REMOVAL_SECONDS)) {
-        activeState = MASTERNODE_REMOVE;
+    if (!IsPingedWithin(MERCHANTNODE_REMOVAL_SECONDS)) {
+        activeState = MERCHANTNODE_REMOVE;
         return;
     }
 
-    if (!IsPingedWithin(MASTERNODE_EXPIRATION_SECONDS)) {
-        activeState = MASTERNODE_EXPIRED;
+    if (!IsPingedWithin(MERCHANTNODE_EXPIRATION_SECONDS)) {
+        activeState = MERCHANTNODE_EXPIRED;
         return;
     }
 
-    if (lastPing.sigTime - sigTime < MASTERNODE_MIN_MNP_SECONDS){
-    	activeState = MASTERNODE_PRE_ENABLED;
+    if (lastPing.sigTime - sigTime < MERCHANTNODE_MIN_MNP_SECONDS){
+    	activeState = MERCHANTNODE_PRE_ENABLED;
     	return;
     }
 
     if (!unitTest) {
         CValidationState state;
         CMutableTransaction tx = CMutableTransaction();
-        CTxOut vout = CTxOut((MASTERNODE_COLLATERAL-0.01) * COIN, merchantnodeSigner.collateralPubKey);
+        CTxOut vout = CTxOut((MERCHANTNODE_COLLATERAL-0.01) * COIN, merchantnodeSigner.collateralPubKey);
         tx.vin.push_back(vin);
         tx.vout.push_back(vout);
 
@@ -231,13 +231,13 @@ void CMerchantnode::Check(bool forceCheck)
             if (!lockMain) return;
 
             if (!AcceptableInputs(mempool, state, CTransaction(tx), false, NULL)) {
-                activeState = MASTERNODE_VIN_SPENT;
+                activeState = MERCHANTNODE_VIN_SPENT;
                 return;
             }
         }
     }
 
-    activeState = MASTERNODE_ENABLED; // OK
+    activeState = MERCHANTNODE_ENABLED; // OK
 }
 
 int64_t CMerchantnode::SecondsSincePayment()
@@ -309,19 +309,19 @@ int64_t CMerchantnode::GetLastPaid()
 std::string CMerchantnode::GetStatus()
 {
     switch (nActiveState) {
-    case CMerchantnode::MASTERNODE_PRE_ENABLED:
+    case CMerchantnode::MERCHANTNODE_PRE_ENABLED:
         return "PRE_ENABLED";
-    case CMerchantnode::MASTERNODE_ENABLED:
+    case CMerchantnode::MERCHANTNODE_ENABLED:
         return "ENABLED";
-    case CMerchantnode::MASTERNODE_EXPIRED:
+    case CMerchantnode::MERCHANTNODE_EXPIRED:
         return "EXPIRED";
-    case CMerchantnode::MASTERNODE_OUTPOINT_SPENT:
+    case CMerchantnode::MERCHANTNODE_OUTPOINT_SPENT:
         return "OUTPOINT_SPENT";
-    case CMerchantnode::MASTERNODE_REMOVE:
+    case CMerchantnode::MERCHANTNODE_REMOVE:
         return "REMOVE";
-    case CMerchantnode::MASTERNODE_WATCHDOG_EXPIRED:
+    case CMerchantnode::MERCHANTNODE_WATCHDOG_EXPIRED:
         return "WATCHDOG_EXPIRED";
-    case CMerchantnode::MASTERNODE_POSE_BAN:
+    case CMerchantnode::MERCHANTNODE_POSE_BAN:
         return "POSE_BAN";
     default:
         return "UNKNOWN";
@@ -343,7 +343,7 @@ CMerchantnodeBroadcast::CMerchantnodeBroadcast()
     pubKeyCollateralAddress = CPubKey();
     pubKeyMerchantnode1 = CPubKey();
     sig = std::vector<unsigned char>();
-    activeState = MASTERNODE_ENABLED;
+    activeState = MERCHANTNODE_ENABLED;
     sigTime = GetAdjustedTime();
     lastPing = CMerchantnodePing();
     cacheInputAge = 0;
@@ -363,7 +363,7 @@ CMerchantnodeBroadcast::CMerchantnodeBroadcast(CService newAddr, CTxIn newVin, C
     pubKeyCollateralAddress = pubKeyCollateralAddressNew;
     pubKeyMerchantnode = pubKeyMerchantnodeNew;
     sig = std::vector<unsigned char>();
-    activeState = MASTERNODE_ENABLED;
+    activeState = MERCHANTNODE_ENABLED;
     sigTime = GetAdjustedTime();
     lastPing = CMerchantnodePing();
     cacheInputAge = 0;
@@ -553,7 +553,7 @@ bool CMerchantnodeBroadcast::CheckAndUpdate(int& nDos)
 
     // mn.pubkey = pubkey, IsVinAssociatedWithPubkey is validated once below,
     //   after that they just need to match
-    if (pmn->pubKeyCollateralAddress == pubKeyCollateralAddress && !pmn->IsBroadcastedWithin(MASTERNODE_MIN_MNB_SECONDS)) {
+    if (pmn->pubKeyCollateralAddress == pubKeyCollateralAddress && !pmn->IsBroadcastedWithin(MERCHANTNODE_MIN_MNB_SECONDS)) {
         //take the newest entry
         LogPrint("merchantnode","mnb - Got updated entry for %s\n", vin.prevout.hash.ToString());
         if (pmn->UpdateFromNewBroadcast((*this))) {
@@ -589,7 +589,7 @@ bool CMerchantnodeBroadcast::CheckInputsAndAdd(int& nDoS)
 
     CValidationState state;
     CMutableTransaction tx = CMutableTransaction();
-    CTxOut vout = CTxOut((MASTERNODE_COLLATERAL-0.01) * COIN, merchantnodeSigner.collateralPubKey);
+    CTxOut vout = CTxOut((MERCHANTNODE_COLLATERAL-0.01) * COIN, merchantnodeSigner.collateralPubKey);
     tx.vin.push_back(vin);
     tx.vout.push_back(vout);
 
@@ -611,8 +611,8 @@ bool CMerchantnodeBroadcast::CheckInputsAndAdd(int& nDoS)
 
     LogPrint("merchantnode", "mnb - Accepted Merchantnode entry\n");
 
-    if (GetInputAge(vin) < MASTERNODE_MIN_CONFIRMATIONS) {
-        LogPrint("merchantnode","mnb - Input must have at least %d confirmations\n", MASTERNODE_MIN_CONFIRMATIONS);
+    if (GetInputAge(vin) < MERCHANTNODE_MIN_CONFIRMATIONS) {
+        LogPrint("merchantnode","mnb - Input must have at least %d confirmations\n", MERCHANTNODE_MIN_CONFIRMATIONS);
         // maybe we miss few blocks, let this mnb to be checked again later
         mnodeman.mapSeenMerchantnodeBroadcast.erase(GetHash());
         merchantnodeSync.mapSeenSyncMNB.erase(GetHash());
@@ -620,17 +620,17 @@ bool CMerchantnodeBroadcast::CheckInputsAndAdd(int& nDoS)
     }
 
     // verify that sig time is legit in past
-    // should be at least not earlier than block when XAX collateral tx got MASTERNODE_MIN_CONFIRMATIONS
+    // should be at least not earlier than block when XAX collateral tx got MERCHANTNODE_MIN_CONFIRMATIONS
     uint256 hashBlock = 0;
     CTransaction tx2;
     GetTransaction(vin.prevout.hash, tx2, hashBlock, true);
     BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
     if (mi != mapBlockIndex.end() && (*mi).second) {
         CBlockIndex* pMNIndex = (*mi).second;                                                        // block for 1000 PIVX tx -> 1 confirmation
-        CBlockIndex* pConfIndex = chainActive[pMNIndex->nHeight + MASTERNODE_MIN_CONFIRMATIONS - 1]; // block where tx got MASTERNODE_MIN_CONFIRMATIONS
+        CBlockIndex* pConfIndex = chainActive[pMNIndex->nHeight + MERCHANTNODE_MIN_CONFIRMATIONS - 1]; // block where tx got MERCHANTNODE_MIN_CONFIRMATIONS
         if (pConfIndex->GetBlockTime() > sigTime) {
             LogPrint("merchantnode","mnb - Bad sigTime %d for Merchantnode %s (%i conf block is at %d)\n",
-                sigTime, vin.prevout.hash.ToString(), MASTERNODE_MIN_CONFIRMATIONS, pConfIndex->GetBlockTime());
+                sigTime, vin.prevout.hash.ToString(), MERCHANTNODE_MIN_CONFIRMATIONS, pConfIndex->GetBlockTime());
             return false;
         }
     }
@@ -654,7 +654,7 @@ bool CMerchantnodeBroadcast::CheckInputsAndAdd(int& nDoS)
 
 void CMerchantnodeBroadcast::Relay()
 {
-    CInv inv(MSG_MASTERNODE_ANNOUNCE, GetHash());
+    CInv inv(MSG_MERCHANTNODE_ANNOUNCE, GetHash());
     RelayInv(inv);
 }
 
@@ -770,8 +770,8 @@ bool CMerchantnodePing::CheckAndUpdate(int& nDos, bool fRequireEnabled, bool fCh
 
         // LogPrint("merchantnode","mnping - Found corresponding mn for vin: %s\n", vin.ToString());
         // update only if there is no known ping for this merchantnode or
-        // last ping was more then MASTERNODE_MIN_MNP_SECONDS-60 ago comparing to this one
-        if (!pmn->IsPingedWithin(MASTERNODE_MIN_MNP_SECONDS - 60, sigTime)) {
+        // last ping was more then MERCHANTNODE_MIN_MNP_SECONDS-60 ago comparing to this one
+        if (!pmn->IsPingedWithin(MERCHANTNODE_MIN_MNP_SECONDS - 60, sigTime)) {
         	if (!VerifySignature(pmn->pubKeyMerchantnode, nDos))
                 return false;
 
@@ -820,6 +820,6 @@ bool CMerchantnodePing::CheckAndUpdate(int& nDos, bool fRequireEnabled, bool fCh
 
 void CMerchantnodePing::Relay()
 {
-    CInv inv(MSG_MASTERNODE_PING, GetHash());
+    CInv inv(MSG_MERCHANTNODE_PING, GetHash());
     RelayInv(inv);
 }

@@ -35,7 +35,7 @@ void ThreadMerchantnodePool()
 
             // check if we should activate or ping every few minutes,
             // start right after sync is considered to be done
-            if (c % MASTERNODE_PING_SECONDS == 0) activeMerchantnode.ManageStatus();
+            if (c % MERCHANTNODE_PING_SECONDS == 0) activeMerchantnode.ManageStatus();
 
             if (c % 60 == 0) {
                 mnodeman.CheckAndRemove();
@@ -55,7 +55,7 @@ bool CMerchantnodeSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey)
     uint256 hash;
     if (GetTransaction(vin.prevout.hash, txVin, hash, true)) {
         BOOST_FOREACH (CTxOut out, txVin.vout) {
-            if (out.nValue == MASTERNODE_COLLATERAL * COIN) {
+            if (out.nValue == MERCHANTNODE_COLLATERAL * COIN) {
                 if (out.scriptPubKey == payee2) return true;
             }
         }

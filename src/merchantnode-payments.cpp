@@ -242,7 +242,7 @@ bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
 
             if (transactionStatus == TrxValidationStatus::InValid) {
                 LogPrint("merchantnode","Invalid budget payment detected %s\n", txNew.ToString().c_str());
-                if (IsSporkActive(SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT))
+                if (IsSporkActive(SPORK_9_MERCHANTNODE_BUDGET_ENFORCEMENT))
                     return false;
 
                 LogPrint("merchantnode","Budget enforcement is disabled, accepting block\n");
@@ -260,7 +260,7 @@ bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
         return true;
     LogPrint("merchantnode","Invalid mn payment detected %s\n", txNew.ToString().c_str());
 
-    if (IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT))
+    if (IsSporkActive(SPORK_8_MERCHANTNODE_PAYMENT_ENFORCEMENT))
         return false;
     LogPrint("merchantnode","Merchantnode payment enforcement is disabled, accepting block\n");
 
@@ -343,7 +343,7 @@ void CMerchantnodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t n
 
 int CMerchantnodePayments::GetMinMerchantnodePaymentsProto()
 {
-    if (IsSporkActive(SPORK_10_MASTERNODE_PAY_UPDATED_NODES))
+    if (IsSporkActive(SPORK_10_MERCHANTNODE_PAY_UPDATED_NODES))
         return ActiveProtocol();                          // Allow only updated peers
     else
         return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT; // Also allow old peers as long as they are allowed to run
@@ -532,7 +532,7 @@ bool CMerchantnodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
 
     CAmount nReward = GetBlockValue(nBlockHeight);
 
-    if (IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
+    if (IsSporkActive(SPORK_8_MERCHANTNODE_PAYMENT_ENFORCEMENT)) {
         // Get a stable number of merchantnodes by ignoring newly activated (< 8000 sec old) merchantnodes
         nMerchantnode_Drift_Count = mnodeman.stable_size() + Params().MerchantnodeCountDrift();
     }
@@ -762,7 +762,7 @@ bool CMerchantnodePayments::ProcessBlock(int nBlockHeight)
 
 void CMerchantnodePaymentWinner::Relay()
 {
-    CInv inv(MSG_MASTERNODE_WINNER, GetHash());
+    CInv inv(MSG_MERCHANTNODE_WINNER, GetHash());
     RelayInv(inv);
 }
 
@@ -805,12 +805,12 @@ void CMerchantnodePayments::Sync(CNode* node, int nCountNeeded)
     while (it != mapMerchantnodePayeeVotes.end()) {
         CMerchantnodePaymentWinner winner = (*it).second;
         if (winner.nBlockHeight >= nHeight - nCountNeeded && winner.nBlockHeight <= nHeight + 20) {
-            node->PushInventory(CInv(MSG_MASTERNODE_WINNER, winner.GetHash()));
+            node->PushInventory(CInv(MSG_MERCHANTNODE_WINNER, winner.GetHash()));
             nInvCount++;
         }
         ++it;
     }
-    node->PushMessage("ssc", MASTERNODE_SYNC_MNW, nInvCount);
+    node->PushMessage("ssc", MERCHANTNODE_SYNC_MNW, nInvCount);
 }
 
 std::string CMerchantnodePayments::ToString() const

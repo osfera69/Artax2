@@ -380,7 +380,7 @@ UniValue merchantnodedebug (const UniValue& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("merchantnodedebug", "") + HelpExampleRpc("merchantnodedebug", ""));
 
-    if (activeMerchantnode.status != ACTIVE_MASTERNODE_INITIAL || !merchantnodeSync.IsSynced())
+    if (activeMerchantnode.status != ACTIVE_MERCHANTNODE_INITIAL || !merchantnodeSync.IsSynced())
         return activeMerchantnode.GetStatus();
 
     CTxIn vin = CTxIn();
@@ -444,8 +444,8 @@ UniValue startmerchantnode (const UniValue& params, bool fHelp)
     if (strCommand == "local") {
         if (!fMasterNode) throw runtime_error("you must set merchantnode=1 in the configuration\n");
 
-        if (activeMerchantnode.status != ACTIVE_MASTERNODE_STARTED) {
-            activeMerchantnode.status = ACTIVE_MASTERNODE_INITIAL; // TODO: consider better way
+        if (activeMerchantnode.status != ACTIVE_MERCHANTNODE_STARTED) {
+            activeMerchantnode.status = ACTIVE_MERCHANTNODE_INITIAL; // TODO: consider better way
             activeMerchantnode.ManageStatus();
             if (fLock)
                 pwalletMain->Lock();
@@ -459,8 +459,8 @@ UniValue startmerchantnode (const UniValue& params, bool fHelp)
             throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
         if ((strCommand == "missing" || strCommand == "disabled") &&
-            (merchantnodeSync.RequestedMerchantnodeAssets <= MASTERNODE_SYNC_LIST ||
-                merchantnodeSync.RequestedMerchantnodeAssets == MASTERNODE_SYNC_FAILED)) {
+            (merchantnodeSync.RequestedMerchantnodeAssets <= MERCHANTNODE_SYNC_LIST ||
+                merchantnodeSync.RequestedMerchantnodeAssets == MERCHANTNODE_SYNC_FAILED)) {
             throw runtime_error("You can't use this command until merchantnode list is synced\n");
         }
 

@@ -930,11 +930,11 @@ void BitcoinGUI::setNumBlocks(int count)
                 walletFrame->showOutOfSyncWarning(false);
 #endif // ENABLE_WALLET
 
-            nAttempt = merchantnodeSync.RequestedMerchantnodeAttempt < MASTERNODE_SYNC_THRESHOLD ?
+            nAttempt = merchantnodeSync.RequestedMerchantnodeAttempt < MERCHANTNODE_SYNC_THRESHOLD ?
                            merchantnodeSync.RequestedMerchantnodeAttempt + 1 :
-                           MASTERNODE_SYNC_THRESHOLD;
-            progress = nAttempt + (merchantnodeSync.RequestedMerchantnodeAssets - 1) * MASTERNODE_SYNC_THRESHOLD;
-            progressBar->setMaximum(4 * MASTERNODE_SYNC_THRESHOLD);
+                           MERCHANTNODE_SYNC_THRESHOLD;
+            progress = nAttempt + (merchantnodeSync.RequestedMerchantnodeAssets - 1) * MERCHANTNODE_SYNC_THRESHOLD;
+            progressBar->setMaximum(4 * MERCHANTNODE_SYNC_THRESHOLD);
             progressBar->setFormat(tr("Synchronizing additional data: %p%"));
             progressBar->setValue(progress);
         }

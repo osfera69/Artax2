@@ -4,8 +4,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef MASTERNODE_H
-#define MASTERNODE_H
+#ifndef MERCHANTNODE_H
+#define MERCHANTNODE_H
 
 #include "base58.h"
 #include "key.h"
@@ -15,15 +15,15 @@
 #include "timedata.h"
 #include "util.h"
 
-#define MASTERNODE_MIN_CONFIRMATIONS 15
-#define MASTERNODE_MIN_MNP_SECONDS (10 * 60)
-#define MASTERNODE_MIN_MNB_SECONDS (5 * 60)
-#define MASTERNODE_PING_SECONDS (5 * 60)
-#define MASTERNODE_EXPIRATION_SECONDS (120 * 60)
-#define MASTERNODE_REMOVAL_SECONDS (130 * 60)
-#define MASTERNODE_CHECK_SECONDS 5
+#define MERCHANTNODE_MIN_CONFIRMATIONS 15
+#define MERCHANTNODE_MIN_MNP_SECONDS (10 * 60)
+#define MERCHANTNODE_MIN_MNB_SECONDS (5 * 60)
+#define MERCHANTNODE_PING_SECONDS (5 * 60)
+#define MERCHANTNODE_EXPIRATION_SECONDS (120 * 60)
+#define MERCHANTNODE_REMOVAL_SECONDS (130 * 60)
+#define MERCHANTNODE_CHECK_SECONDS 5
 
-#define MASTERNODE_COLLATERAL 2500
+#define MERCHANTNODE_COLLATERAL 2500
 
 using namespace std;
 
@@ -116,15 +116,15 @@ private:
 
 public:
     enum state {
-        MASTERNODE_PRE_ENABLED,
-        MASTERNODE_ENABLED,
-        MASTERNODE_EXPIRED,
-        MASTERNODE_OUTPOINT_SPENT,
-        MASTERNODE_REMOVE,
-        MASTERNODE_WATCHDOG_EXPIRED,
-        MASTERNODE_POSE_BAN,
-        MASTERNODE_VIN_SPENT,
-        MASTERNODE_POS_ERROR
+        MERCHANTNODE_PRE_ENABLED,
+        MERCHANTNODE_ENABLED,
+        MERCHANTNODE_EXPIRED,
+        MERCHANTNODE_OUTPOINT_SPENT,
+        MERCHANTNODE_REMOVE,
+        MERCHANTNODE_WATCHDOG_EXPIRED,
+        MERCHANTNODE_POSE_BAN,
+        MERCHANTNODE_VIN_SPENT,
+        MERCHANTNODE_POS_ERROR
     };
 
     CTxIn vin;
@@ -253,7 +253,7 @@ public:
 
     bool IsEnabled()
     {
-        return activeState == MASTERNODE_ENABLED;
+        return activeState == MERCHANTNODE_ENABLED;
     }
 
     int GetMerchantnodeInputAge()
@@ -274,11 +274,11 @@ public:
     {
         std::string strStatus = "ACTIVE";
 
-        if (activeState == CMerchantnode::MASTERNODE_ENABLED) strStatus = "ENABLED";
-        if (activeState == CMerchantnode::MASTERNODE_EXPIRED) strStatus = "EXPIRED";
-        if (activeState == CMerchantnode::MASTERNODE_VIN_SPENT) strStatus = "VIN_SPENT";
-        if (activeState == CMerchantnode::MASTERNODE_REMOVE) strStatus = "REMOVE";
-        if (activeState == CMerchantnode::MASTERNODE_POS_ERROR) strStatus = "POS_ERROR";
+        if (activeState == CMerchantnode::MERCHANTNODE_ENABLED) strStatus = "ENABLED";
+        if (activeState == CMerchantnode::MERCHANTNODE_EXPIRED) strStatus = "EXPIRED";
+        if (activeState == CMerchantnode::MERCHANTNODE_VIN_SPENT) strStatus = "VIN_SPENT";
+        if (activeState == CMerchantnode::MERCHANTNODE_REMOVE) strStatus = "REMOVE";
+        if (activeState == CMerchantnode::MERCHANTNODE_POS_ERROR) strStatus = "POS_ERROR";
 
         return strStatus;
     }

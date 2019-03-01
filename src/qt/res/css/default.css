@@ -1810,7 +1810,7 @@ QWidget#PrivacyDialog .QFrame#verticalFrameRight {
 QWidget#PrivacyDialog .QPushButton {
 	border-radius: 10px;
 }
-/**************************** MASTERNODE LIST *******************************************/
+/**************************** MERCHANTNODE LIST *******************************************/
 
 QWidget#MerchantnodeList .QFrame#frameList {
 	background-color: #132232;

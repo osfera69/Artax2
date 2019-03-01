@@ -2,8 +2,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef MASTERNODE_VOTE_H
-#define MASTERNODE_VOTE_H
+#ifndef MERCHANTNODE_VOTE_H
+#define MERCHANTNODE_VOTE_H
 
 #include "base58.h"
 #include "init.h"
@@ -318,4 +318,4 @@ public:
     }
 };
 
-#endif // MASTERNODE_VOTE_H
+#endif // MERCHANTNODE_VOTE_H

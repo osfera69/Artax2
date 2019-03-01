@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef MASTERNODELIST_H
-#define MASTERNODELIST_H
+#ifndef MERCHANTNODELIST_H
+#define MERCHANTNODELIST_H
 
 #include "merchantnode.h"
 #include "platformstyle.h"
@@ -15,9 +15,9 @@
 #include <QTimer>
 #include <QWidget>
 
-#define MY_MASTERNODELIST_UPDATE_SECONDS 60
-#define MASTERNODELIST_UPDATE_SECONDS 15
-#define MASTERNODELIST_FILTER_COOLDOWN_SECONDS 3
+#define MY_MERCHANTNODELIST_UPDATE_SECONDS 60
+#define MERCHANTNODELIST_UPDATE_SECONDS 15
+#define MERCHANTNODELIST_FILTER_COOLDOWN_SECONDS 3
 
 namespace Ui
 {
@@ -72,4 +72,4 @@ private Q_SLOTS:
     void on_tableWidgetMyMerchantnodes_itemSelectionChanged();
     void on_UpdateButton_clicked();
 };
-#endif // MASTERNODELIST_H
+#endif // MERCHANTNODELIST_H

@@ -27,7 +27,7 @@ CMerchantnodeSync::CMerchantnodeSync()
 
 bool CMerchantnodeSync::IsSynced()
 {
-    return RequestedMerchantnodeAssets == MASTERNODE_SYNC_FINISHED;
+    return RequestedMerchantnodeAssets == MERCHANTNODE_SYNC_FINISHED;
 }
 
 bool CMerchantnodeSync::IsBlockchainSynced()
@@ -81,7 +81,7 @@ void CMerchantnodeSync::Reset()
     countBudgetItemFin = 0;
     sumCommunityItemProp = 0;
     countCommunityItemProp = 0;
-    RequestedMerchantnodeAssets = MASTERNODE_SYNC_INITIAL;
+    RequestedMerchantnodeAssets = MERCHANTNODE_SYNC_INITIAL;
     RequestedMerchantnodeAttempt = 0;
     nAssetSyncStarted = GetTime();
 }
@@ -89,7 +89,7 @@ void CMerchantnodeSync::Reset()
 void CMerchantnodeSync::AddedMerchantnodeList(uint256 hash)
 {
     if (mnodeman.mapSeenMerchantnodeBroadcast.count(hash)) {
-        if (mapSeenSyncMNB[hash] < MASTERNODE_SYNC_THRESHOLD) {
+        if (mapSeenSyncMNB[hash] < MERCHANTNODE_SYNC_THRESHOLD) {
             lastMerchantnodeList = GetTime();
             mapSeenSyncMNB[hash]++;
         }
@@ -102,7 +102,7 @@ void CMerchantnodeSync::AddedMerchantnodeList(uint256 hash)
 void CMerchantnodeSync::AddedMerchantnodeWinner(uint256 hash)
 {
     if (merchantnodePayments.mapMerchantnodePayeeVotes.count(hash)) {
-        if (mapSeenSyncMNW[hash] < MASTERNODE_SYNC_THRESHOLD) {
+        if (mapSeenSyncMNW[hash] < MERCHANTNODE_SYNC_THRESHOLD) {
             lastMerchantnodeWinner = GetTime();
             mapSeenSyncMNW[hash]++;
         }
@@ -116,7 +116,7 @@ void CMerchantnodeSync::AddedBudgetItem(uint256 hash)
 {
     if (budget.mapSeenMerchantnodeBudgetProposals.count(hash) || budget.mapSeenMerchantnodeBudgetVotes.count(hash) ||
         budget.mapSeenFinalizedBudgets.count(hash) || budget.mapSeenFinalizedBudgetVotes.count(hash)) {
-        if (mapSeenSyncBudget[hash] < MASTERNODE_SYNC_THRESHOLD) {
+        if (mapSeenSyncBudget[hash] < MERCHANTNODE_SYNC_THRESHOLD) {
             lastBudgetItem = GetTime();
             mapSeenSyncBudget[hash]++;
         }
@@ -129,7 +129,7 @@ void CMerchantnodeSync::AddedBudgetItem(uint256 hash)
 void CMerchantnodeSync::AddedCommunityItem(uint256 hash)
 {
     if (communityVote.mapSeenMerchantnodeCommunityProposals.count(hash) || communityVote.mapSeenMerchantnodeCommunityVotes.count(hash)) {
-        if (mapSeenSyncCommunity[hash] < MASTERNODE_SYNC_THRESHOLD) {
+        if (mapSeenSyncCommunity[hash] < MERCHANTNODE_SYNC_THRESHOLD) {
             lastCommunityItem = GetTime();
             mapSeenSyncCommunity[hash]++;
         }
@@ -157,26 +157,26 @@ bool CMerchantnodeSync::IsCommunityPropEmpty()
 void CMerchantnodeSync::GetNextAsset()
 {
     switch (RequestedMerchantnodeAssets) {
-    case (MASTERNODE_SYNC_INITIAL):
-    case (MASTERNODE_SYNC_FAILED): // should never be used here actually, use Reset() instead
+    case (MERCHANTNODE_SYNC_INITIAL):
+    case (MERCHANTNODE_SYNC_FAILED): // should never be used here actually, use Reset() instead
         ClearFulfilledRequest();
-        RequestedMerchantnodeAssets = MASTERNODE_SYNC_SPORKS;
+        RequestedMerchantnodeAssets = MERCHANTNODE_SYNC_SPORKS;
         break;
-    case (MASTERNODE_SYNC_SPORKS):
-        RequestedMerchantnodeAssets = MASTERNODE_SYNC_LIST;
+    case (MERCHANTNODE_SYNC_SPORKS):
+        RequestedMerchantnodeAssets = MERCHANTNODE_SYNC_LIST;
         break;
-    case (MASTERNODE_SYNC_LIST):
-        RequestedMerchantnodeAssets = MASTERNODE_SYNC_MNW;
+    case (MERCHANTNODE_SYNC_LIST):
+        RequestedMerchantnodeAssets = MERCHANTNODE_SYNC_MNW;
         break;
-    case (MASTERNODE_SYNC_MNW):
-        RequestedMerchantnodeAssets = MASTERNODE_SYNC_BUDGET;
+    case (MERCHANTNODE_SYNC_MNW):
+        RequestedMerchantnodeAssets = MERCHANTNODE_SYNC_BUDGET;
         break;
-    case (MASTERNODE_SYNC_BUDGET):
-        RequestedMerchantnodeAssets = MASTERNODE_SYNC_COMMUNITYVOTE;
+    case (MERCHANTNODE_SYNC_BUDGET):
+        RequestedMerchantnodeAssets = MERCHANTNODE_SYNC_COMMUNITYVOTE;
         break;
-    case (MASTERNODE_SYNC_COMMUNITYVOTE):
+    case (MERCHANTNODE_SYNC_COMMUNITYVOTE):
         LogPrintf("CMerchantnodeSync::GetNextAsset - Sync has finished\n");
-        RequestedMerchantnodeAssets = MASTERNODE_SYNC_FINISHED;
+        RequestedMerchantnodeAssets = MERCHANTNODE_SYNC_FINISHED;
         break;
     }
     RequestedMerchantnodeAttempt = 0;
@@ -186,21 +186,21 @@ void CMerchantnodeSync::GetNextAsset()
 std::string CMerchantnodeSync::GetSyncStatus()
 {
     switch (merchantnodeSync.RequestedMerchantnodeAssets) {
-    case MASTERNODE_SYNC_INITIAL:
+    case MERCHANTNODE_SYNC_INITIAL:
         return _("Synchronization pending...");
-    case MASTERNODE_SYNC_SPORKS:
+    case MERCHANTNODE_SYNC_SPORKS:
         return _("Synchronizing sporks...");
-    case MASTERNODE_SYNC_LIST:
+    case MERCHANTNODE_SYNC_LIST:
         return _("Synchronizing merchantnodes...");
-    case MASTERNODE_SYNC_MNW:
+    case MERCHANTNODE_SYNC_MNW:
         return _("Synchronizing merchantnode winners...");
-    case MASTERNODE_SYNC_BUDGET:
+    case MERCHANTNODE_SYNC_BUDGET:
         return _("Synchronizing budgets...");
-    case MASTERNODE_SYNC_COMMUNITYVOTE:
+    case MERCHANTNODE_SYNC_COMMUNITYVOTE:
         return _("Synchronizing community proposals...");
-    case MASTERNODE_SYNC_FAILED:
+    case MERCHANTNODE_SYNC_FAILED:
         return _("Synchronization failed");
-    case MASTERNODE_SYNC_FINISHED:
+    case MERCHANTNODE_SYNC_FINISHED:
         return _("Synchronization finished");
     }
     return "";
@@ -213,32 +213,32 @@ void CMerchantnodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CD
         int nCount;
         vRecv >> nItemID >> nCount;
 
-        if (RequestedMerchantnodeAssets >= MASTERNODE_SYNC_FINISHED) return;
+        if (RequestedMerchantnodeAssets >= MERCHANTNODE_SYNC_FINISHED) return;
 
         //this means we will receive no further communication
         switch (nItemID) {
-        case (MASTERNODE_SYNC_LIST):
+        case (MERCHANTNODE_SYNC_LIST):
             if (nItemID != RequestedMerchantnodeAssets) return;
             sumMerchantnodeList += nCount;
             countMerchantnodeList++;
             break;
-        case (MASTERNODE_SYNC_MNW):
+        case (MERCHANTNODE_SYNC_MNW):
             if (nItemID != RequestedMerchantnodeAssets) return;
             sumMerchantnodeWinner += nCount;
             countMerchantnodeWinner++;
             break;
-        case (MASTERNODE_SYNC_BUDGET_PROP):
-            if (RequestedMerchantnodeAssets != MASTERNODE_SYNC_BUDGET) return;
+        case (MERCHANTNODE_SYNC_BUDGET_PROP):
+            if (RequestedMerchantnodeAssets != MERCHANTNODE_SYNC_BUDGET) return;
             sumBudgetItemProp += nCount;
             countBudgetItemProp++;
             break;
-        case (MASTERNODE_SYNC_BUDGET_FIN):
-            if (RequestedMerchantnodeAssets != MASTERNODE_SYNC_BUDGET) return;
+        case (MERCHANTNODE_SYNC_BUDGET_FIN):
+            if (RequestedMerchantnodeAssets != MERCHANTNODE_SYNC_BUDGET) return;
             sumBudgetItemFin += nCount;
             countBudgetItemFin++;
             break;
-        case (MASTERNODE_SYNC_COMMUNITYVOTE_PROP):
-            if (RequestedMerchantnodeAssets != MASTERNODE_SYNC_COMMUNITYVOTE) return;
+        case (MERCHANTNODE_SYNC_COMMUNITYVOTE_PROP):
+            if (RequestedMerchantnodeAssets != MERCHANTNODE_SYNC_COMMUNITYVOTE) return;
             sumCommunityItemProp += nCount;
             countCommunityItemProp++;
             break;
@@ -266,7 +266,7 @@ void CMerchantnodeSync::Process()
 {
     static int tick = 0;
 
-    if (tick++ % MASTERNODE_SYNC_TIMEOUT != 0) return;
+    if (tick++ % MERCHANTNODE_SYNC_TIMEOUT != 0) return;
 
     if (IsSynced()) {
         /*
@@ -279,19 +279,19 @@ void CMerchantnodeSync::Process()
     }
 
     //try syncing again
-    if (RequestedMerchantnodeAssets == MASTERNODE_SYNC_FAILED && lastFailure + (1 * 60) < GetTime()) {
+    if (RequestedMerchantnodeAssets == MERCHANTNODE_SYNC_FAILED && lastFailure + (1 * 60) < GetTime()) {
         Reset();
-    } else if (RequestedMerchantnodeAssets == MASTERNODE_SYNC_FAILED) {
+    } else if (RequestedMerchantnodeAssets == MERCHANTNODE_SYNC_FAILED) {
         return;
     }
 
     LogPrint("merchantnode", "CMerchantnodeSync::Process() - tick %d RequestedMerchantnodeAssets %d\n", tick, RequestedMerchantnodeAssets);
 
-    if (RequestedMerchantnodeAssets == MASTERNODE_SYNC_INITIAL) GetNextAsset();
+    if (RequestedMerchantnodeAssets == MERCHANTNODE_SYNC_INITIAL) GetNextAsset();
 
     // sporks synced but blockchain is not, wait until we're almost at a recent block to continue
     if (Params().NetworkID() != CBaseChainParams::REGTEST &&
-        !IsBlockchainSynced() && RequestedMerchantnodeAssets > MASTERNODE_SYNC_SPORKS) return;
+        !IsBlockchainSynced() && RequestedMerchantnodeAssets > MERCHANTNODE_SYNC_SPORKS) return;
 
     TRY_LOCK(cs_vNodes, lockRecv);
     if (!lockRecv) return;
@@ -308,14 +308,14 @@ void CMerchantnodeSync::Process()
                 uint256 n = 0;
                 pnode->PushMessage("mnvs", n); //sync merchantnode votes
             } else {
-                RequestedMerchantnodeAssets = MASTERNODE_SYNC_FINISHED;
+                RequestedMerchantnodeAssets = MERCHANTNODE_SYNC_FINISHED;
             }
             RequestedMerchantnodeAttempt++;
             return;
         }
 
         //set to synced
-        if (RequestedMerchantnodeAssets == MASTERNODE_SYNC_SPORKS) {
+        if (RequestedMerchantnodeAssets == MERCHANTNODE_SYNC_SPORKS) {
             if (pnode->HasFulfilledRequest("getspork")) continue;
             pnode->FulfilledRequest("getspork");
 
@@ -327,9 +327,9 @@ void CMerchantnodeSync::Process()
         }
 
         if (pnode->nVersion >= merchantnodePayments.GetMinMerchantnodePaymentsProto()) {
-            if (RequestedMerchantnodeAssets == MASTERNODE_SYNC_LIST) {
-                LogPrint("merchantnode", "CMerchantnodeSync::Process() - lastMerchantnodeList %lld (GetTime() - MASTERNODE_SYNC_TIMEOUT) %lld\n", lastMerchantnodeList, GetTime() - MASTERNODE_SYNC_TIMEOUT);
-                if (lastMerchantnodeList > 0 && lastMerchantnodeList < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMerchantnodeAttempt >= MASTERNODE_SYNC_THRESHOLD) { //hasn't received a new item in the last five seconds, so we'll move to the
+            if (RequestedMerchantnodeAssets == MERCHANTNODE_SYNC_LIST) {
+                LogPrint("merchantnode", "CMerchantnodeSync::Process() - lastMerchantnodeList %lld (GetTime() - MERCHANTNODE_SYNC_TIMEOUT) %lld\n", lastMerchantnodeList, GetTime() - MERCHANTNODE_SYNC_TIMEOUT);
+                if (lastMerchantnodeList > 0 && lastMerchantnodeList < GetTime() - MERCHANTNODE_SYNC_TIMEOUT * 2 && RequestedMerchantnodeAttempt >= MERCHANTNODE_SYNC_THRESHOLD) { //hasn't received a new item in the last five seconds, so we'll move to the
                     GetNextAsset();
                     return;
                 }
@@ -339,10 +339,10 @@ void CMerchantnodeSync::Process()
 
                 // timeout
                 if (lastMerchantnodeList == 0 &&
-                    (RequestedMerchantnodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3 || GetTime() - nAssetSyncStarted > MASTERNODE_SYNC_TIMEOUT * 5)) {
-                    if (IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
+                    (RequestedMerchantnodeAttempt >= MERCHANTNODE_SYNC_THRESHOLD * 3 || GetTime() - nAssetSyncStarted > MERCHANTNODE_SYNC_TIMEOUT * 5)) {
+                    if (IsSporkActive(SPORK_8_MERCHANTNODE_PAYMENT_ENFORCEMENT)) {
                         LogPrintf("CMerchantnodeSync::Process - ERROR - Sync has failed, will retry later\n");
-                        RequestedMerchantnodeAssets = MASTERNODE_SYNC_FAILED;
+                        RequestedMerchantnodeAssets = MERCHANTNODE_SYNC_FAILED;
                         RequestedMerchantnodeAttempt = 0;
                         lastFailure = GetTime();
                         nCountFailures++;
@@ -352,15 +352,15 @@ void CMerchantnodeSync::Process()
                     return;
                 }
 
-                if (RequestedMerchantnodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return;
+                if (RequestedMerchantnodeAttempt >= MERCHANTNODE_SYNC_THRESHOLD * 3) return;
 
                 mnodeman.DsegUpdate(pnode);
                 RequestedMerchantnodeAttempt++;
                 return;
             }
 
-            if (RequestedMerchantnodeAssets == MASTERNODE_SYNC_MNW) {
-                if (lastMerchantnodeWinner > 0 && lastMerchantnodeWinner < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMerchantnodeAttempt >= MASTERNODE_SYNC_THRESHOLD) { //hasn't received a new item in the last five seconds, so we'll move to the
+            if (RequestedMerchantnodeAssets == MERCHANTNODE_SYNC_MNW) {
+                if (lastMerchantnodeWinner > 0 && lastMerchantnodeWinner < GetTime() - MERCHANTNODE_SYNC_TIMEOUT * 2 && RequestedMerchantnodeAttempt >= MERCHANTNODE_SYNC_THRESHOLD) { //hasn't received a new item in the last five seconds, so we'll move to the
                     GetNextAsset();
                     return;
                 }
@@ -370,10 +370,10 @@ void CMerchantnodeSync::Process()
 
                 // timeout
                 if (lastMerchantnodeWinner == 0 &&
-                    (RequestedMerchantnodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3 || GetTime() - nAssetSyncStarted > MASTERNODE_SYNC_TIMEOUT * 5)) {
-                    if (IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
+                    (RequestedMerchantnodeAttempt >= MERCHANTNODE_SYNC_THRESHOLD * 3 || GetTime() - nAssetSyncStarted > MERCHANTNODE_SYNC_TIMEOUT * 5)) {
+                    if (IsSporkActive(SPORK_8_MERCHANTNODE_PAYMENT_ENFORCEMENT)) {
                         LogPrintf("CMerchantnodeSync::Process - ERROR - Sync has failed, will retry later\n");
-                        RequestedMerchantnodeAssets = MASTERNODE_SYNC_FAILED;
+                        RequestedMerchantnodeAssets = MERCHANTNODE_SYNC_FAILED;
                         RequestedMerchantnodeAttempt = 0;
                         lastFailure = GetTime();
                         nCountFailures++;
@@ -383,7 +383,7 @@ void CMerchantnodeSync::Process()
                     return;
                 }
 
-                if (RequestedMerchantnodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return;
+                if (RequestedMerchantnodeAttempt >= MERCHANTNODE_SYNC_THRESHOLD * 3) return;
 
                 CBlockIndex* pindexPrev = chainActive.Tip();
                 if (pindexPrev == NULL) return;
@@ -397,10 +397,10 @@ void CMerchantnodeSync::Process()
         }
 
         if (pnode->nVersion >= ActiveProtocol()) {
-            if (RequestedMerchantnodeAssets == MASTERNODE_SYNC_BUDGET) {
+            if (RequestedMerchantnodeAssets == MERCHANTNODE_SYNC_BUDGET) {
 
                 // We'll start rejecting votes if we accidentally get set as synced too soon
-                if (lastBudgetItem > 0 && lastBudgetItem < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMerchantnodeAttempt >= MASTERNODE_SYNC_THRESHOLD) {
+                if (lastBudgetItem > 0 && lastBudgetItem < GetTime() - MERCHANTNODE_SYNC_TIMEOUT * 2 && RequestedMerchantnodeAttempt >= MERCHANTNODE_SYNC_THRESHOLD) {
 
                     // Hasn't received a new item in the last five seconds, so we'll move to the
                     GetNextAsset();
@@ -413,7 +413,7 @@ void CMerchantnodeSync::Process()
 
                 // timeout
                 if (lastBudgetItem == 0 &&
-                    (RequestedMerchantnodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3 || GetTime() - nAssetSyncStarted > MASTERNODE_SYNC_TIMEOUT * 5)) {
+                    (RequestedMerchantnodeAttempt >= MERCHANTNODE_SYNC_THRESHOLD * 3 || GetTime() - nAssetSyncStarted > MERCHANTNODE_SYNC_TIMEOUT * 5)) {
                     // maybe there is no budgets at all, so just finish syncing
                     GetNextAsset();
                     activeMerchantnode.ManageStatus();
@@ -423,7 +423,7 @@ void CMerchantnodeSync::Process()
                 if (pnode->HasFulfilledRequest("busync")) continue;
                 pnode->FulfilledRequest("busync");
 
-                if (RequestedMerchantnodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return;
+                if (RequestedMerchantnodeAttempt >= MERCHANTNODE_SYNC_THRESHOLD * 3) return;
 
                 uint256 n = 0;
                 pnode->PushMessage("mnvs", n); //sync merchantnode votes
@@ -432,10 +432,10 @@ void CMerchantnodeSync::Process()
                 return;
             }
 
-            if (RequestedMerchantnodeAssets == MASTERNODE_SYNC_COMMUNITYVOTE) {
+            if (RequestedMerchantnodeAssets == MERCHANTNODE_SYNC_COMMUNITYVOTE) {
 
                 // We'll start rejecting votes if we accidentally get set as synced too soon
-                if (lastCommunityItem > 0 && lastCommunityItem < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMerchantnodeAttempt >= MASTERNODE_SYNC_THRESHOLD) {
+                if (lastCommunityItem > 0 && lastCommunityItem < GetTime() - MERCHANTNODE_SYNC_TIMEOUT * 2 && RequestedMerchantnodeAttempt >= MERCHANTNODE_SYNC_THRESHOLD) {
 
                     // Hasn't received a new item in the last five seconds, so we'll move to the
                     GetNextAsset();
@@ -448,7 +448,7 @@ void CMerchantnodeSync::Process()
 
                 // timeout
                 if (lastCommunityItem == 0 &&
-                    (RequestedMerchantnodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3 || GetTime() - nAssetSyncStarted > MASTERNODE_SYNC_TIMEOUT * 5)) {
+                    (RequestedMerchantnodeAttempt >= MERCHANTNODE_SYNC_THRESHOLD * 3 || GetTime() - nAssetSyncStarted > MERCHANTNODE_SYNC_TIMEOUT * 5)) {
                     // maybe there is are no community proposals at all, so just finish syncing
                     GetNextAsset();
                     activeMerchantnode.ManageStatus();
@@ -458,7 +458,7 @@ void CMerchantnodeSync::Process()
                 if (pnode->HasFulfilledRequest("comsync")) continue;
                 pnode->FulfilledRequest("comsync");
 
-                if (RequestedMerchantnodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return;
+                if (RequestedMerchantnodeAttempt >= MERCHANTNODE_SYNC_THRESHOLD * 3) return;
 
                 uint256 n = 0;
                 pnode->PushMessage("mncvs", n); //sync merchantnode community votes

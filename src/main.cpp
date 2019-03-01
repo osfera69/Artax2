@@ -3515,7 +3515,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
         return error("%s : ActivateBestChain failed", __func__);
 
     if (!fLiteMode) {
-        if (merchantnodeSync.RequestedMerchantnodeAssets > MASTERNODE_SYNC_LIST) {
+        if (merchantnodeSync.RequestedMerchantnodeAssets > MERCHANTNODE_SYNC_LIST) {
             merchantnodePayments.ProcessBlock(GetHeight() + 10);
             budget.NewBlock();
         }
@@ -4282,7 +4282,7 @@ bool static AlreadyHave(const CInv& inv)
         return mapTxLockVote.count(inv.hash);
     case MSG_SPORK:
         return mapSporks.count(inv.hash);
-    case MSG_MASTERNODE_WINNER:
+    case MSG_MERCHANTNODE_WINNER:
         if (merchantnodePayments.mapMerchantnodePayeeVotes.count(inv.hash)) {
             merchantnodeSync.AddedMerchantnodeWinner(inv.hash);
             return true;
@@ -4312,13 +4312,13 @@ bool static AlreadyHave(const CInv& inv)
             return true;
         }
         return false;
-    case MSG_MASTERNODE_ANNOUNCE:
+    case MSG_MERCHANTNODE_ANNOUNCE:
         if (mnodeman.mapSeenMerchantnodeBroadcast.count(inv.hash)) {
             merchantnodeSync.AddedMerchantnodeList(inv.hash);
             return true;
         }
         return false;
-    case MSG_MASTERNODE_PING:
+    case MSG_MERCHANTNODE_PING:
         return mnodeman.mapSeenMerchantnodePing.count(inv.hash);
     }
     // Don't know what it is, just say we already got one
@@ -4450,7 +4450,7 @@ void static ProcessGetData(CNode* pfrom)
                         pushed = true;
                     }
                 }
-                if (!pushed && inv.type == MSG_MASTERNODE_WINNER) {
+                if (!pushed && inv.type == MSG_MERCHANTNODE_WINNER) {
                     if (merchantnodePayments.mapMerchantnodePayeeVotes.count(inv.hash)) {
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
@@ -4499,7 +4499,7 @@ void static ProcessGetData(CNode* pfrom)
                     }
                 }
 
-                if (!pushed && inv.type == MSG_MASTERNODE_ANNOUNCE) {
+                if (!pushed && inv.type == MSG_MERCHANTNODE_ANNOUNCE) {
                     if (mnodeman.mapSeenMerchantnodeBroadcast.count(inv.hash)) {
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
@@ -4509,7 +4509,7 @@ void static ProcessGetData(CNode* pfrom)
                     }
                 }
 
-                if (!pushed && inv.type == MSG_MASTERNODE_PING) {
+                if (!pushed && inv.type == MSG_MERCHANTNODE_PING) {
                     if (mnodeman.mapSeenMerchantnodePing.count(inv.hash)) {
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
