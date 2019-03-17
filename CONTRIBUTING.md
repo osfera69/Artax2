@@ -10,11 +10,6 @@ Contributing to Artax Core
 -@mindkontrolultra
 -@Robin73
 -@gote
--@StakesandNodes
--@Dany_CX
--@madcoin
--@Lead
--@paranoidtruth
 
 -Contact the team on Discord or Telegram
 
