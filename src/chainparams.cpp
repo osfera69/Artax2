@@ -189,7 +189,7 @@ public:
         fHeadersFirstSyncingActive = false;
 
         nPoolMaxTransactions = 3;
-        strSporkKey = "04866dc02c998b7e1ab16fe14e0d86554595da90c36acb706a4d763b58ed0edb1f82c87e3ced065c5b299b26e12496956b9e5f9f19aa008b5c46229b15477c875a";
+        strSporkKey = "02f3c403ca7b5250a765e9ccec0797212c03a530370295114a2b3d4aaed772f080";
         strMerchantnodePoolDummyAddress = "AsJVWUkt6HtSCY2SaJ2akeyJUg8bg1hW3S";
         nStartMerchantnodePayments = genesis.nTime + 86400; // 24 hours after genesis creation
 
